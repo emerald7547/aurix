@@ -5,389 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AURIX | Project Brief</title>
     <style>
-        :root {
-            --ink: #080a12;
-            --paper: #f5f4f1;
-            --violet: #7445ff;
-            --blue: #5d91ff;
-            --pink: #d38aff;
-            --line: #d8d6d0
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        html {
-            scroll-behavior: smooth
-        }
-
-        body {
-            margin: 0;
-            color: var(--ink);
-            background: var(--paper);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            padding: 20px
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            border-bottom: 1px solid var(--line);
-            padding-bottom: 20px
-        }
-
-        .brand {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--ink);
-            text-decoration: none
-        }
-
-        .progress {
-            font-size: 14px;
-            color: #999
-        }
-
-        h1 {
-            font-size: 32px;
-            margin-top: 0;
-            margin-bottom: 8px
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px
-        }
-
-        .form-group {
-            margin-bottom: 24px
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--ink)
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            background: white;
-            color: var(--ink)
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px
-        }
-
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            font-weight: 400;
-            cursor: pointer
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 32px
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease
-        }
-
-        .submit-button {
-            background: var(--violet);
-            color: white;
-            flex: 1
-        }
-
-        .submit-button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px)
-        }
-
-        .submit-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none
-        }
-
-        .reset-button {
-            background: var(--line);
-            color: var(--ink)
-        }
-
-        .reset-button:hover {
-            background: #ccc
-        }
-
-        .status-message {
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 16px;
-            display: none;
-            font-size: 14px
-        }
-
-        .status-message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block
-        }
-
-        .status-message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block
-        }
-
-        .status-message.loading {
-            background: #e7f3ff;
-            color: #0c5aa0;
-            border: 1px solid #b3d9ff;
-            display: block
-        }
+        :root { --ink:#080a12; --paper:#f5f4f1; --violet:#7445ff; --blue:#5d91ff; --pink:#d38aff; --line:#d8d6d0 }
+        *{box-sizing:border-box} html{scroll-behavior:smooth}
+        body{margin:0;color:var(--ink);background:var(--paper);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;padding:20px}
+        .container{max-width:900px;margin:0 auto}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;border-bottom:1px solid var(--line);padding-bottom:20px}.brand{font-size:24px;font-weight:700;color:var(--ink);text-decoration:none}.progress{font-size:14px;color:#999}
+        h1{font-size:32px;margin-top:0;margin-bottom:8px}.subtitle{font-size:16px;color:#666;margin-bottom:30px}.form-group{margin-bottom:24px}label{display:block;font-weight:600;margin-bottom:8px;color:var(--ink)}
+        input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:inherit;background:white;color:var(--ink)}textarea{resize:vertical;min-height:100px}
+        .checkbox-group{display:flex;flex-wrap:wrap;gap:16px}.checkbox-item{display:flex;align-items:center;gap:8px}input[type=checkbox]{width:18px;height:18px;cursor:pointer}.checkbox-item label{margin:0;font-weight:400;cursor:pointer}
+        .button-group{display:flex;gap:12px;margin-top:32px}button{padding:12px 24px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s ease}.submit-button{background:var(--violet);color:white;flex:1}.submit-button:hover{opacity:.9;transform:translateY(-2px)}.submit-button:disabled{opacity:.5;cursor:not-allowed;transform:none}.reset-button{background:var(--line);color:var(--ink)}.reset-button:hover{background:#ccc}
+        .status-message{padding:12px;border-radius:6px;margin-top:16px;display:none;font-size:14px}.status-message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;display:block}.status-message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;display:block}.status-message.loading{background:#e7f3ff;color:#0c5aa0;border:1px solid #b3d9ff;display:block}
+        .paint-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--ink);pointer-events:none;animation:paintIntroOut 1s 2.9s forwards}.paint-stage{position:relative;width:min(620px,78vw);height:260px;display:grid;place-items:center;overflow:hidden}.paint-canvas{position:absolute;width:90%;height:72%;border:2px solid rgba(255,255,255,.55);background:#fff;box-shadow:0 25px 80px rgba(0,0,0,.45);transform:scale(.88) rotate(-2deg);animation:canvasIn .8s .2s cubic-bezier(.2,.8,.2,1) both}.paint-stroke{position:absolute;width:72%;height:34px;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--blue),var(--pink));filter:blur(1px);transform:translateX(-120%) rotate(-5deg);animation:paintAcross 1.25s .75s cubic-bezier(.2,.8,.2,1) forwards}.paint-brush{position:absolute;right:10%;top:20%;font-size:78px;transform:translate(80px,-40px) rotate(-35deg);filter:drop-shadow(3px 6px 5px rgba(0,0,0,.5));animation:brushPaint 1.35s .65s cubic-bezier(.2,.8,.2,1) forwards}.paint-copy{position:absolute;bottom:12%;color:#fff;font:700 .7rem/1 Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:0;animation:copyIn .6s 1.9s forwards}
+        @keyframes canvasIn{from{opacity:0;transform:scale(.55) rotate(-8deg)}to{opacity:1;transform:scale(.88) rotate(-2deg)}}@keyframes paintAcross{from{transform:translateX(-120%) rotate(-5deg)}to{transform:translateX(8%) rotate(-5deg)}}@keyframes brushPaint{0%{transform:translate(80px,-40px) rotate(-35deg)}55%{transform:translate(-170px,70px) rotate(-25deg)}100%{transform:translate(-20px,20px) rotate(-25deg)}}@keyframes copyIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes paintIntroOut{to{opacity:0;visibility:hidden}}
     </style>
 </head>
-
 <body>
+    <div class="paint-intro" aria-hidden="true"><div class="paint-stage"><div class="paint-canvas"></div><div class="paint-stroke"></div><div class="paint-brush">🖌️</div><div class="paint-copy">Paint your vision</div></div></div>
     <div class="container">
-        <header class="topbar">
-            <a class="brand" href="index.html">AURIX</a>
-            <span class="progress">Step 1 of 1</span>
-        </header>
-
+        <header class="topbar"><a class="brand" href="index.html">AURIX</a><span class="progress">Step 1 of 1</span></header>
         <main>
-            <h1>Tell us about your project</h1>
-            <p class="subtitle">Help us understand your vision so we can create the perfect website for you</p>
-
+            <h1>Tell us about your project</h1><p class="subtitle">Help us understand your vision so we can create the perfect website for you</p>
             <form id="briefForm">
-                <div class="form-group">
-                    <label for="name">Your Name *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="businessName">Business Name *</label>
-                    <input type="text" id="businessName" name="businessName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="businessDescription">Business Description</label>
-                    <textarea id="businessDescription" name="businessDescription"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="goal">What should visitors do on your website?</label>
-                    <textarea id="goal" name="goal" placeholder="e.g., Buy products, book appointments, contact for inquiries..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Which pages do you need?</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="home" name="features" value="Home">
-                            <label for="home">Home</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="about" name="features" value="About">
-                            <label for="about">About</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="services" name="features" value="Services">
-                            <label for="services">Services</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="portfolio" name="features" value="Portfolio">
-                            <label for="portfolio">Portfolio</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="contact" name="features" value="Contact">
-                            <label for="contact">Contact</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="blog" name="features" value="Blog">
-                            <label for="blog">Blog</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="style">What should the website feel like?</label>
-                    <select id="style" name="style">
-                        <option value="">Select a style...</option>
-                        <option value="modern">Modern & Minimalist</option>
-                        <option value="bold">Bold & Colorful</option>
-                        <option value="professional">Professional & Corporate</option>
-                        <option value="creative">Creative & Artistic</option>
-                        <option value="playful">Playful & Fun</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="colors">Choose your font/color style</label>
-                    <select id="colors" name="colors">
-                        <option value="">Select a style...</option>
-                        <option value="dark">Dark & Elegant</option>
-                        <option value="light">Light & Bright</option>
-                        <option value="pastel">Pastel & Soft</option>
-                        <option value="vibrant">Vibrant & Bold</option>
-                        <option value="neutral">Neutral & Timeless</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="hasContent">Do you already have website content?</label>
-                    <select id="hasContent" name="hasContent">
-                        <option value="">Select...</option>
-                        <option value="yes">Yes, I'll provide it</option>
-                        <option value="no">No, I need help creating it</option>
-                        <option value="partial">I have some, need help with the rest</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="timeline">Project Timeline</label>
-                    <select id="timeline" name="timeline">
-                        <option value="">Select...</option>
-                        <option value="asap">ASAP</option>
-                        <option value="2weeks">Within 2 weeks</option>
-                        <option value="1month">Within 1 month</option>
-                        <option value="flexible">Flexible</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="additionalInfo">Anything else you'd like to tell us?</label>
-                    <textarea id="additionalInfo" name="additionalInfo" placeholder="Share any additional details..."></textarea>
-                </div>
-
-                <div class="button-group">
-                    <button type="submit" class="submit-button">Submit Brief</button>
-                    <button type="reset" class="reset-button">Clear Form</button>
-                </div>
-
-                <div id="saveStatus" class="status-message"></div>
+                <div class="form-group"><label for="name">Your Name *</label><input type="text" id="name" name="name" required></div>
+                <div class="form-group"><label for="email">Email *</label><input type="email" id="email" name="email" required></div>
+                <div class="form-group"><label for="phone">Phone Number *</label><input type="tel" id="phone" name="phone" required></div>
+                <div class="form-group"><label for="businessName">Business Name *</label><input type="text" id="businessName" name="businessName" required></div>
+                <div class="form-group"><label for="businessDescription">Business Description</label><textarea id="businessDescription" name="businessDescription"></textarea></div>
+                <div class="form-group"><label for="goal">What should visitors do on your website?</label><textarea id="goal" name="goal" placeholder="e.g., Buy products, book appointments, contact for inquiries..."></textarea></div>
+                <div class="form-group"><label>Which pages do you need?</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="home" name="features" value="Home"><label for="home">Home</label></div><div class="checkbox-item"><input type="checkbox" id="about" name="features" value="About"><label for="about">About</label></div><div class="checkbox-item"><input type="checkbox" id="services" name="features" value="Services"><label for="services">Services</label></div><div class="checkbox-item"><input type="checkbox" id="portfolio" name="features" value="Portfolio"><label for="portfolio">Portfolio</label></div><div class="checkbox-item"><input type="checkbox" id="contact" name="features" value="Contact"><label for="contact">Contact</label></div><div class="checkbox-item"><input type="checkbox" id="blog" name="features" value="Blog"><label for="blog">Blog</label></div></div></div>
+                <div class="form-group"><label for="style">What should the website feel like?</label><select id="style" name="style"><option value="">Select a style...</option><option value="modern">Modern & Minimalist</option><option value="bold">Bold & Colorful</option><option value="professional">Professional & Corporate</option><option value="creative">Creative & Artistic</option><option value="playful">Playful & Fun</option></select></div>
+                <div class="form-group"><label for="colors">Choose your font/color style</label><select id="colors" name="colors"><option value="">Select a style...</option><option value="dark">Dark & Elegant</option><option value="light">Light & Bright</option><option value="pastel">Pastel & Soft</option><option value="vibrant">Vibrant & Bold</option><option value="neutral">Neutral & Timeless</option></select></div>
+                <div class="form-group"><label for="hasContent">Do you already have website content?</label><select id="hasContent" name="hasContent"><option value="">Select...</option><option value="yes">Yes, I'll provide it</option><option value="no">No, I need help creating it</option><option value="partial">I have some, need help with the rest</option></select></div>
+                <div class="form-group"><label for="timeline">Project Timeline</label><select id="timeline" name="timeline"><option value="">Select...</option><option value="asap">ASAP</option><option value="2weeks">Within 2 weeks</option><option value="1month">Within 1 month</option><option value="flexible">Flexible</option></select></div>
+                <div class="form-group"><label for="additionalInfo">Anything else you'd like to tell us?</label><textarea id="additionalInfo" name="additionalInfo" placeholder="Share any additional details..."></textarea></div>
+                <div class="button-group"><button type="submit" class="submit-button">Submit Brief</button><button type="reset" class="reset-button">Clear Form</button></div><div id="saveStatus" class="status-message"></div>
             </form>
         </main>
     </div>
-
     <script>
-        const form = document.getElementById('briefForm');
-        
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = form.querySelector('.submit-button');
-            const status = document.getElementById('saveStatus');
-            
-            // Disable button and show loading
-            btn.disabled = true;
-            status.className = 'status-message loading';
-            status.textContent = 'Submitting your brief...';
-
-            // Collect form data
-            const formData = new FormData(form);
-            const features = formData.getAll('features');
-            
-            const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                businessName: formData.get('businessName'),
-                businessDescription: formData.get('businessDescription'),
-                goal: formData.get('goal'),
-                style: formData.get('style'),
-                colors: formData.get('colors'),
-                hasContent: formData.get('hasContent'),
-                additionalInfo: formData.get('additionalInfo'),
-                timeline: formData.get('timeline'),
-                features: features
-            };
-
-            try {
-                const response = await fetch('/api/submit-brief', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    status.className = 'status-message success';
-                    status.textContent = '✓ Brief submitted successfully! We\'ll be in touch soon.';
-                    form.reset();
-                } else {
-                    status.className = 'status-message error';
-                    status.textContent = `Error: ${result.error || 'Failed to submit'}`;
-                }
-            } catch (error) {
-                status.className = 'status-message error';
-                status.textContent = `Error: ${error.message}`;
-            } finally {
-                btn.disabled = false;
-            }
-        });
+        const form=document.getElementById('briefForm');
+        form.addEventListener('submit',async(e)=>{e.preventDefault();const btn=form.querySelector('.submit-button'),status=document.getElementById('saveStatus');btn.disabled=true;status.className='status-message loading';status.textContent='Submitting your brief...';const formData=new FormData(form),features=formData.getAll('features');const data={name:formData.get('name'),email:formData.get('email'),phone:formData.get('phone'),businessName:formData.get('businessName'),businessDescription:formData.get('businessDescription'),goal:formData.get('goal'),style:formData.get('style'),colors:formData.get('colors'),hasContent:formData.get('hasContent'),additionalInfo:formData.get('additionalInfo'),timeline:formData.get('timeline'),features};try{const response=await fetch('/api/submit-brief',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}),result=await response.json();if(response.ok){status.className='status-message success';status.textContent='✓ Brief submitted successfully! We\'ll be in touch soon.';form.reset()}else{status.className='status-message error';status.textContent=`Error: ${result.error||'Failed to submit'}`}}catch(error){status.className='status-message error';status.textContent=`Error: ${error.message}`}finally{btn.disabled=false}});
     </script>
 </body>
-
 </html>
