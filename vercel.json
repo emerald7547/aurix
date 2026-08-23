@@ -1,8 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "echo 'Static site - no build required'",
+  "buildCommand": "npm install",
   "outputDirectory": ".",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1.js" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/create", "destination": "/create.html" }
   ]
