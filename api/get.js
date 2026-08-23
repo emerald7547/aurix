@@ -1,4 +1,45 @@
-import postgres from 'postgres';
-let sql;function db(){if(!process.env.POSTGRES_URL)throw new Error('POSTGRES_URL is not configured');if(!sql)sql=postgres(process.env.POSTGRES_URL,{ssl:'require',max:1,prepare:false});return sql}
-async function ensureTable(){await db()`CREATE TABLE IF NOT EXISTS aurix_submissions (id TEXT PRIMARY KEY,name TEXT NOT NULL,email TEXT NOT NULL,phone TEXT NOT NULL,business_name TEXT NOT NULL,business_description TEXT,goal TEXT,style TEXT,colors TEXT,has_content TEXT,additional_info TEXT,timeline TEXT,features JSONB NOT NULL DEFAULT '[]'::jsonb,photos JSONB NOT NULL DEFAULT '[]'::jsonb)`;await db()`ALTER TABLE aurix_submissions ADD COLUMN IF NOT EXISTS photos JSONB NOT NULL DEFAULT '[]'::jsonb`}
-export default async function handler(req,res){if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});try{await ensureTable();const rows=await db()`SELECT id,name,email,phone,business_name AS "businessName",business_description AS "businessDescription",goal,style,colors,has_content AS "hasContent",additional_info AS "additionalInfo",timeline,features,photos,submitted_at AS "submittedAt" FROM aurix_submissions ORDER BY submitted_at DESC`;return res.status(200).json(rows)}catch(e){console.error(e);return res.status(500).json({error:'Failed to read submissions'})}}
+import { readFileSync, existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_FILE = path.join(__dirname, '../submissions.json');
+
+// In-memory fallback for Vercel
+let inMemoryDB = [];
+
+export default function handler(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
+    if (req.method !== 'GET') {
+        res.status(405).json({ error: 'Method not allowed' });
+        return;
+    }
+
+    try {
+        let submissions = [];
+        
+        try {
+            if (existsSync(DB_FILE)) {
+                const data = readFileSync(DB_FILE, 'utf-8');
+                submissions = JSON.parse(data);
+            }
+        } catch (error) {
+            console.log('Using in-memory storage');
+            submissions = inMemoryDB;
+        }
+
+        res.status(200).json(submissions);
+    } catch (error) {
+        console.error('Error reading submissions:', error);
+        res.status(500).json({ error: 'Failed to fetch submissions' });
+    }
+}
