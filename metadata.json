@@ -1,0 +1,6 @@
+{
+  "name": "Express & MongoDB Atlas Form & Admin Portal",
+  "description": "Full-stack Node.js & Express server with image uploads, MongoDB Atlas integration, secure authentication, and password-protected admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
