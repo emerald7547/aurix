@@ -5,103 +5,501 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AURIX | Project Brief</title>
     <style>
-        :root { --ink: #080a12; --paper: #f5f4f1; --violet: #7445ff; --blue: #5d91ff; --pink: #d38aff; --line: #d8d6d0; }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { margin: 0; color: var(--ink); background: var(--paper); font-family: Arial, sans-serif; }
-        @media (pointer: fine) { body, a, button, input, textarea, select { cursor: none; } }
+        
+        body {
+            background: #0f0f0f;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        .brush-cursor { position: fixed; z-index: 1000; top: 0; left: 0; width: 54px; height: 54px; pointer-events: none; opacity: 0; transform: translate3d(-100px, -100px, 0) rotate(-30deg); transform-origin: 12px 12px; filter: drop-shadow(2px 4px 3px rgba(0, 0, 0, .45)); transition: opacity .2s ease, filter .2s ease; }
-        .brush-cursor img { display: block; width: 100%; height: 100%; object-fit: contain; }
-        .brush-cursor.is-visible { opacity: 1; }
-        .brush-cursor.is-hovering { filter: drop-shadow(0 0 7px rgba(116, 69, 255, .9)); }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: #000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.25rem 5vw; color: white; background: var(--ink); }
-        .brand { color: white; font: 700 1.2rem Georgia, serif; letter-spacing: .16em; text-decoration: none; }
-        .progress { color: #aaa9b8; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
-        .page-wrap { width: min(1080px, calc(100% - 2rem)); margin: 0 auto; padding: clamp(3rem, 7vw, 6rem) 0; }
-        .intro { max-width: 720px; margin-bottom: 3.5rem; }
-        .kicker { margin: 0 0 1rem; color: var(--violet); font-size: .72rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
-        h1 { margin: 0; font: 400 clamp(3rem, 9vw, 7.5rem)/.88 Georgia, serif; letter-spacing: -.03em; }
-        .intro p { max-width: 540px; margin: 1.5rem 0 0; color: #5d5c67; line-height: 1.7; }
-        .brief { display: grid; gap: 1rem; }
-        .section { padding: clamp(1.5rem, 4vw, 3rem); background: white; border: 1px solid var(--line); box-shadow: 0 15px 50px rgba(8, 10, 18, .06); animation: sectionIn .7s both; }
-        .section:nth-child(2) { animation-delay: .08s; } .section:nth-child(3) { animation-delay: .16s; } .section:nth-child(4) { animation-delay: .24s; } .section:nth-child(5) { animation-delay: .32s; } .section:nth-child(6) { animation-delay: .4s; }
-        .section-heading { display: flex; align-items: start; gap: 1rem; margin-bottom: 2rem; }
-        .section-number { color: var(--violet); font: 700 .75rem Arial, sans-serif; letter-spacing: .12em; }
-        h2 { margin: 0; font: 400 clamp(1.8rem, 4vw, 3.3rem)/1 Georgia, serif; }
-        h3 { margin: 2rem 0 .75rem; font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; }
-        .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        label, legend { display: block; margin-bottom: .5rem; color: #55535e; font-size: .78rem; font-weight: 700; }
-        input[type="text"], input[type="email"], input[type="tel"], textarea, select { width: 100%; padding: .9rem 1rem; color: var(--ink); border: 1px solid var(--line); background: #fbfaf7; font: inherit; outline: none; }
-        input:focus, textarea:focus, select:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(116, 69, 255, .12); }
-        textarea { min-height: 120px; resize: vertical; }
-        .helper { margin: .6rem 0 0; color: #777580; font-size: .78rem; line-height: 1.5; }
-        .choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: .65rem; }
-        .choice { position: relative; }
-        .choice input { position: absolute; opacity: 0; }
-        .choice label { display: block; min-height: 48px; margin: 0; padding: .9rem 1rem; color: var(--ink); border: 1px solid var(--line); background: #fbfaf7; cursor: none; transition: .2s ease; }
-        .choice input:checked + label, .choice label:hover { color: white; border-color: var(--violet); background: var(--violet); transform: translateY(-2px); }
-        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .color-field { padding: .8rem; border: 1px solid var(--line); background: #fbfaf7; }
-        .color-field input { width: 100%; height: 52px; padding: 0; border: 0; background: transparent; }
-        .color-field label { margin-bottom: .5rem; }
-        .font-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .65rem; }
-        .font-option label { font-size: 1.3rem; font-weight: 400; }
-        .font-option:nth-child(1) label { font-family: Arial, sans-serif; } .font-option:nth-child(2) label { font-family: Georgia, serif; } .font-option:nth-child(3) label { font-family: Garamond, Georgia, serif; } .font-option:nth-child(4) label { font-family: Impact, sans-serif; } .font-option:nth-child(5) label { font-family: Consolas, monospace; } .font-option:nth-child(6) label { font-family: "Comic Sans MS", cursive; } .font-option:nth-child(7) label { font-family: Verdana, sans-serif; }
-        .upload { display: flex; align-items: center; justify-content: center; min-height: 100px; padding: 1rem; color: #686672; border: 1px dashed #aaa7b1; background: #fbfaf7; text-align: center; }
-        .upload input { max-width: 100%; }
-        .stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); }
-        .stepper button { width: 42px; height: 42px; color: var(--ink); border: 0; background: #eeeef1; font-size: 1.2rem; }
-        .stepper output { min-width: 45px; text-align: center; font-weight: 700; }
-        .range-row { display: flex; align-items: center; gap: 1rem; color: #6a6872; font-size: .8rem; }
-        input[type="range"] { flex: 1; accent-color: var(--violet); }
-        .review { display: none; padding: 1rem; margin-top: 1rem; background: #f0edff; border-left: 3px solid var(--violet); }
-        .review.is-visible { display: block; }
-        .submit-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 2rem 0 0; }
-        .submit-button { position: relative; padding: 1.1rem 1.5rem; color: white; border: 0; background: linear-gradient(100deg, var(--violet), var(--blue)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 12px 28px rgba(116, 69, 255, .25); }
-        .submit-button:hover { transform: translateY(-3px); box-shadow: 0 18px 35px rgba(116, 69, 255, .4); }
-        .success { display: none; padding: 4rem 1rem; text-align: center; }
-        .success.is-visible { display: block; animation: sectionIn .6s both; }
-        .success h2 { font-size: clamp(2.4rem, 6vw, 5rem); }
-        .success p { max-width: 600px; margin: 1rem auto; color: #5d5c67; line-height: 1.7; }
-        .back-link { color: var(--violet); font-weight: 700; }
-        @keyframes sectionIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 650px) { .field-grid, .color-grid { grid-template-columns: 1fr; } .submit-row { align-items: stretch; flex-direction: column; } .submit-button { width: 100%; } }
-        @media (pointer: coarse), (prefers-reduced-motion: reduce) { .brush-cursor { display: none; } * { animation-duration: .01ms !important; } }
+        .brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .progress {
+            color: #808080;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .page-wrap {
+            width: min(800px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 3rem 0;
+        }
+
+        .intro {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .intro h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .intro p {
+            font-size: 1.05rem;
+            color: #a0a0a0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .brief {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .section {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            color: #ff6b6b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3:first-child {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #d0d0d0;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .choice {
+            position: relative;
+        }
+
+        .choice input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .choice label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .choice input:checked + label {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            border-color: #ff6b6b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .choice label:hover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .submit-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .submit-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+        }
+
+        .success {
+            display: none;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .success.is-visible {
+            display: block;
+        }
+
+        .success h2 {
+            color: #ff8787;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .success p {
+            color: #b0b0b0;
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .helper {
+            font-size: 0.85rem;
+            color: #808080;
+            margin-top: -0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .intro h1 {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="brush-cursor" aria-hidden="true"><img src="paint-brush-fill.svg" alt=""></div>
-    <header class="topbar"><a class="brand" href="index.html">AURIX</a><span class="progress">Project brief / 06 sections</span></header>
+    <header class="topbar">
+        <a href="index.html" class="brand">AURIX</a>
+        <span class="progress">Project Brief</span>
+    </header>
+
     <main class="page-wrap">
-        <header class="intro"><p class="kicker">The first stroke</p><h1>Let's make your idea impossible to ignore.</h1><p>Tell us what you are building. We will turn your answers into a clear, distinctive direction for your AURIX website.</p></header>
+        <header class="intro">
+            <h1>Let's Build Your Vision</h1>
+            <p>Tell us everything about your project. The more detail you provide, the better we'll understand what you need.</p>
+        </header>
+
         <form id="briefForm" class="brief">
-            <section class="section"><div class="section-heading"><span class="section-number">01</span><h2>Let's get to know you</h2></div><div class="field-grid"><div><label for="name">Your name</label><input id="name" name="name" type="text" placeholder="Enter your name" required></div><div><label for="project">Brand / Business / Project name</label><input id="project" name="project" type="text" placeholder="What should we call your project?" required></div></div><h3>How can we communicate with you?</h3><div class="choice-grid"><div class="choice"><input id="email-contact" name="contact-method" type="checkbox" value="Email"><label for="email-contact">Email</label></div><div class="choice"><input id="phone-contact" name="contact-method" type="checkbox" value="Phone / WhatsApp"><label for="phone-contact">Phone / WhatsApp</label></div><div class="choice"><input id="instagram-contact" name="contact-method" type="checkbox" value="Instagram"><label for="instagram-contact">Instagram</label></div><div class="choice"><input id="other-contact" name="contact-method" type="checkbox" value="Other"><label for="other-contact">Other</label></div></div><div style="margin-top: 1rem"><label for="contact">Your contact detail</label><input id="contact" name="contact" type="text" placeholder="Enter your email / phone / Instagram ID"><p class="helper">Your contact information is used only to discuss your AURIX project.</p></div></section>
-            <section class="section"><div class="section-heading"><span class="section-number">02</span><h2>Tell us about your website</h2></div><h3>What is the website for?</h3><div class="choice-grid"><div class="choice"><input id="business" name="website-type" type="radio" value="Business"><label for="business">Business</label></div><div class="choice"><input id="portfolio" name="website-type" type="radio" value="Portfolio"><label for="portfolio">Portfolio</label></div><div class="choice"><input id="personal" name="website-type" type="radio" value="Personal brand"><label for="personal">Personal brand</label></div><div class="choice"><input id="product" name="website-type" type="radio" value="Product"><label for="product">Product</label></div><div class="choice"><input id="blog" name="website-type" type="radio" value="Blog"><label for="blog">Blog</label></div><div class="choice"><input id="community" name="website-type" type="radio" value="Community"><label for="community">Community</label></div><div class="choice"><input id="school" name="website-type" type="radio" value="School / College project"><label for="school">School / College</label></div><div class="choice"><input id="other-type" name="website-type" type="radio" value="Other"><label for="other-type">Other</label></div></div><h3 for="description">Tell us briefly about what you're building.</h3><textarea id="description" name="description" placeholder="Describe your project in a few sentences..."></textarea><h3>How many pages do you need?</h3><div class="stepper"><button type="button" data-step="down" aria-label="Decrease page count">-</button><output id="pageCount">1</output><button type="button" data-step="up" aria-label="Increase page count">+</button></div><h3>What pages do you want?</h3><div class="choice-grid"><div class="choice"><input id="home" name="pages" type="checkbox" value="Home"><label for="home">Home</label></div><div class="choice"><input id="about" name="pages" type="checkbox" value="About"><label for="about">About</label></div><div class="choice"><input id="services" name="pages" type="checkbox" value="Services"><label for="services">Services</label></div><div class="choice"><input id="products" name="pages" type="checkbox" value="Products"><label for="products">Products</label></div><div class="choice"><input id="portfolio-page" name="pages" type="checkbox" value="Portfolio"><label for="portfolio-page">Portfolio</label></div><div class="choice"><input id="blog-page" name="pages" type="checkbox" value="Blog"><label for="blog-page">Blog</label></div><div class="choice"><input id="contact-page" name="pages" type="checkbox" value="Contact"><label for="contact-page">Contact</label></div></div></section>
-            <section class="section"><div class="section-heading"><span class="section-number">03</span><h2>Make it yours</h2></div><h3>Choose your colour combination</h3><div class="color-grid"><div class="color-field"><label for="primary">Primary colour</label><input id="primary" name="primary" type="color" value="#7445ff"></div><div class="color-field"><label for="secondary">Secondary colour</label><input id="secondary" name="secondary" type="color" value="#5d91ff"></div><div class="color-field"><label for="accent">Accent colour</label><input id="accent" name="accent" type="color" value="#d38aff"></div></div><h3>Want AURIX to suggest a colour palette?</h3><div class="choice-grid"><div class="choice"><input id="suggest-yes" name="palette" type="radio" value="Yes, suggest one"><label for="suggest-yes">Yes, suggest one</label></div><div class="choice"><input id="suggest-no" name="palette" type="radio" value="I'll choose myself"><label for="suggest-no">I'll choose myself</label></div></div><h3>Choose your font style</h3><div class="font-grid"><div class="choice font-option"><input id="modern" name="font" type="radio" value="Modern"><label for="modern">Modern</label></div><div class="choice font-option"><input id="minimal" name="font" type="radio" value="Minimal"><label for="minimal">Minimal</label></div><div class="choice font-option"><input id="elegant" name="font" type="radio" value="Elegant"><label for="elegant">Elegant</label></div><div class="choice font-option"><input id="bold" name="font" type="radio" value="Bold"><label for="bold">Bold</label></div><div class="choice font-option"><input id="futuristic" name="font" type="radio" value="Futuristic"><label for="futuristic">Futuristic</label></div><div class="choice font-option"><input id="playful" name="font" type="radio" value="Playful"><label for="playful">Playful</label></div><div class="choice font-option"><input id="professional" name="font" type="radio" value="Professional"><label for="professional">Professional</label></div></div></section>
-            <section class="section"><div class="section-heading"><span class="section-number">04</span><h2>Images &amp; content</h2></div><h3>Do you want images on your website?</h3><div class="choice-grid"><div class="choice"><input id="images-yes" name="images" type="radio" value="Yes"><label for="images-yes">Yes</label></div><div class="choice"><input id="images-no" name="images" type="radio" value="No"><label for="images-no">No</label></div></div><h3>Upload your images here</h3><label class="upload">+ Upload images<input name="images-files" type="file" accept="image/*" multiple></label><p class="helper">You can upload multiple images.</p><h3>Already have a logo?</h3><div class="choice-grid"><div class="choice"><input id="logo-yes" name="logo" type="radio" value="Yes"><label for="logo-yes">Yes - upload logo</label></div><div class="choice"><input id="logo-no" name="logo" type="radio" value="No"><label for="logo-no">No - I'll provide it later</label></div></div><label class="upload" style="margin-top: 1rem">+ Upload files<input name="logo-file" type="file" accept="image/*"></label><h3 for="material-name">Document/file name</h3><input id="material-name" name="material-name" type="text" placeholder="What should we call this project material?"></section>
-            <section class="section"><div class="section-heading"><span class="section-number">05</span><h2>Make it move</h2></div><h3>Do you want animations?</h3><div class="choice-grid"><div class="choice"><input id="animation-yes" name="animations" type="radio" value="Yes"><label for="animation-yes">Yes</label></div><div class="choice"><input id="animation-no" name="animations" type="radio" value="No"><label for="animation-no">No</label></div><div class="choice"><input id="animation-decide" name="animations" type="radio" value="You decide"><label for="animation-decide">You decide</label></div></div><h3>What kind of animation do you like?</h3><div class="choice-grid"><div class="choice"><input id="smooth" name="animation-style" type="checkbox" value="Smooth page transitions"><label for="smooth">Smooth page transitions</label></div><div class="choice"><input id="text-animation" name="animation-style" type="checkbox" value="Text animations"><label for="text-animation">Text animations</label></div><div class="choice"><input id="scroll" name="animation-style" type="checkbox" value="Scroll animations"><label for="scroll">Scroll animations</label></div><div class="choice"><input id="hover" name="animation-style" type="checkbox" value="Hover effects"><label for="hover">Hover effects</label></div><div class="choice"><input id="image-animation" name="animation-style" type="checkbox" value="Image animations"><label for="image-animation">Image animations</label></div><div class="choice"><input id="interactive" name="animation-style" type="checkbox" value="Interactive buttons"><label for="interactive">Interactive buttons</label></div><div class="choice"><input id="unique" name="animation-style" type="checkbox" value="Something unique"><label for="unique">Something unique</label></div></div><h3>Animation intensity</h3><div class="range-row"><span>Subtle</span><input name="intensity" type="range" min="1" max="10" value="6"><span>Dynamic</span></div><p class="helper">Don't know what to choose? We will choose animations that fit your design without slowing it down.</p></section>
-            <section class="section"><div class="section-heading"><span class="section-number">06</span><h2>Final vision</h2></div><label for="feeling">Describe how you want the finished website to feel.</label><textarea id="feeling" name="feeling" placeholder="Example: I want it to feel premium, modern and energetic, but not overly flashy."></textarea><label for="anything" style="margin-top: 1.5rem">Anything else we should know?</label><textarea id="anything" name="anything" placeholder="Tell us anything that would help us understand your vision..."></textarea><div class="submit-row"><span class="helper">Review your choices before sending.</span><button class="submit-button" type="submit">Submit my AURIX brief</button></div><div id="review" class="review"></div></section>
+            <!-- Contact Information -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">1</span>
+                    <h2>Your Contact Info</h2>
+                </div>
+                <div class="field-grid">
+                    <div>
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div>
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div>
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                        <p class="helper">We'll only contact you about your project. This stays private.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Information -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">2</span>
+                    <h2>Your Business</h2>
+                </div>
+                <h3>What's the name of your business?</h3>
+                <input type="text" name="businessName" placeholder="Your business name" required>
+
+                <h3>What do you do?</h3>
+                <textarea name="businessDescription" placeholder="Describe your business in a few sentences..." required></textarea>
+            </section>
+
+            <!-- Website Purpose -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">3</span>
+                    <h2>Website Purpose</h2>
+                </div>
+                <h3>What's the main goal of your website?</h3>
+                <div class="choice-grid">
+                    <div class="choice">
+                        <input type="radio" id="goal_contact" name="goal" value="Get client inquiries" required>
+                        <label for="goal_contact">Get Inquiries</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="goal_showcase" name="goal" value="Showcase work">
+                        <label for="goal_showcase">Showcase Work</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="goal_sell" name="goal" value="Sell services">
+                        <label for="goal_sell">Sell Services</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="goal_other" name="goal" value="Other">
+                        <label for="goal_other">Other</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Design Preferences -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">4</span>
+                    <h2>Design Style</h2>
+                </div>
+                <h3>How would you describe your ideal website?</h3>
+                <div class="choice-grid">
+                    <div class="choice">
+                        <input type="radio" id="style_modern" name="style" value="Modern & clean" required>
+                        <label for="style_modern">Modern & Clean</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="style_bold" name="style" value="Bold & vibrant">
+                        <label for="style_bold">Bold & Vibrant</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="style_minimal" name="style" value="Minimal & elegant">
+                        <label for="style_minimal">Minimal & Elegant</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="style_creative" name="style" value="Creative & unique">
+                        <label for="style_creative">Creative & Unique</label>
+                    </div>
+                </div>
+
+                <h3>Any specific colors you want?</h3>
+                <input type="text" name="colors" placeholder="e.g., Dark with coral accents">
+            </section>
+
+            <!-- Content & Features -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">5</span>
+                    <h2>Website Features</h2>
+                </div>
+                <h3>What features do you need?</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <label><input type="checkbox" name="features" value="Contact form"> Contact Form</label>
+                    <label><input type="checkbox" name="features" value="Portfolio"> Portfolio/Gallery</label>
+                    <label><input type="checkbox" name="features" value="About page"> About Page</label>
+                    <label><input type="checkbox" name="features" value="Testimonials"> Testimonials</label>
+                    <label><input type="checkbox" name="features" value="Blog"> Blog Section</label>
+                    <label><input type="checkbox" name="features" value="Services"> Services Listing</label>
+                </div>
+
+                <h3>Do you have images or content ready?</h3>
+                <div class="choice-grid">
+                    <div class="choice">
+                        <input type="radio" id="content_yes" name="hasContent" value="Yes, I'll provide everything" required>
+                        <label for="content_yes">Yes, I Have It</label>
+                    </div>
+                    <div class="choice">
+                        <input type="radio" id="content_no" name="hasContent" value="No, help me create it">
+                        <label for="content_no">No, Help Me</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Details -->
+            <section class="section">
+                <div class="section-heading">
+                    <span class="section-number">6</span>
+                    <h2>Anything Else?</h2>
+                </div>
+                <label for="additionalInfo">Tell us anything else about your vision:</label>
+                <textarea id="additionalInfo" name="additionalInfo" placeholder="Any references, competitors, or specific ideas?"></textarea>
+
+                <label for="timeline">When do you need this?</label>
+                <select id="timeline" name="timeline" required>
+                    <option value="">Select timeline...</option>
+                    <option value="ASAP">ASAP (Urgent)</option>
+                    <option value="Within a week">Within a week</option>
+                    <option value="Within 2 weeks">Within 2 weeks</option>
+                    <option value="No rush">No rush</option>
+                </select>
+            </section>
+
+            <div class="submit-row">
+                <button type="submit" class="submit-button">Submit My Project Brief</button>
+            </div>
         </form>
-        <section id="success" class="success"><p class="kicker">Final screen</p><h2>Your vision is saved.</h2><p>We've received your AURIX project brief. We'll review your choices and use them as the foundation for your website.</p><p>You imagined it. Now let's build it.</p><a class="back-link" href="index.html">Return to AURIX</a></section>
+
+        <div id="success" class="success">
+            <h2>✓ Project Received!</h2>
+            <p>Thanks for your project brief. We've got everything we need.</p>
+            <p>You'll hear from us within 24 hours with next steps and any questions.</p>
+            <div class="back-link">
+                <a href="index.html">← Back to home</a>
+            </div>
+        </div>
     </main>
+
     <script>
-        const brushCursor = document.querySelector('.brush-cursor');
-        const interactiveElements = document.querySelectorAll('a, button, input, textarea, select, label');
-        const briefForm = document.querySelector('#briefForm');
-        const review = document.querySelector('#review');
-        const success = document.querySelector('#success');
-        let pageCount = 1;
+        const briefForm = document.getElementById('briefForm');
+        const success = document.getElementById('success');
 
-        if (brushCursor && window.matchMedia('(pointer: fine)').matches) {
-            window.addEventListener('pointermove', (event) => { brushCursor.style.transform = `translate3d(${event.clientX - 10}px, ${event.clientY - 10}px, 0) rotate(-30deg)`; brushCursor.classList.add('is-visible'); });
-            document.addEventListener('mouseleave', () => brushCursor.classList.remove('is-visible'));
-            interactiveElements.forEach((element) => { element.addEventListener('mouseenter', () => brushCursor.classList.add('is-hovering')); element.addEventListener('mouseleave', () => brushCursor.classList.remove('is-hovering')); });
-        }
+        briefForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(briefForm);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                businessName: formData.get('businessName'),
+                businessDescription: formData.get('businessDescription'),
+                goal: formData.get('goal'),
+                style: formData.get('style'),
+                colors: formData.get('colors'),
+                hasContent: formData.get('hasContent'),
+                additionalInfo: formData.get('additionalInfo'),
+                timeline: formData.get('timeline'),
+                features: formData.getAll('features'),
+                submittedAt: new Date().toISOString()
+            };
 
-        document.querySelectorAll('[data-step]').forEach((button) => button.addEventListener('click', () => { pageCount = Math.max(1, Math.min(20, pageCount + (button.dataset.step === 'up' ? 1 : -1))); document.querySelector('#pageCount').value = pageCount; document.querySelector('#pageCount').textContent = pageCount; }));
-        briefForm.addEventListener('submit', (event) => { event.preventDefault(); const formData = new FormData(briefForm); review.innerHTML = `<strong>${formData.get('project') || 'Your project'}</strong> is ready to build with ${pageCount} page${pageCount === 1 ? '' : 's'}.`; review.classList.add('is-visible'); success.classList.add('is-visible'); success.scrollIntoView({ behavior: 'smooth' }); });
+            try {
+                const response = await fetch('/api/submit-brief', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    briefForm.style.display = 'none';
+                    success.classList.add('is-visible');
+                } else {
+                    alert('Error submitting form. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Connection error. Check your network.');
+            }
+        });
     </script>
 </body>
 </html>
