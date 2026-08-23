@@ -1,0 +1,76 @@
+name: Connect brief form to API
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-form:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add persistent submission handler
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('create.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'data-aurix-persistent-submit'
+          if marker not in s:
+              script = r'''<script data-aurix-persistent-submit>
+(function () {
+  const form = document.getElementById('briefForm');
+  if (!form) return;
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const button = form.querySelector('.submit-button');
+    if (button) { button.disabled = true; button.dataset.originalText = button.textContent; button.textContent = 'Saving…'; }
+    const fd = new FormData(form);
+    const contact = String(fd.get('contact') || '').trim();
+    const email = contact.includes('@') ? contact : '';
+    const phone = contact.includes('@') ? '' : contact;
+    const payload = {
+      name: String(fd.get('name') || '').trim(),
+      email,
+      phone,
+      businessName: String(fd.get('project') || '').trim(),
+      businessDescription: String(fd.get('description') || '').trim(),
+      goal: String(fd.get('website-type') || '').trim(),
+      style: Array.from(form.querySelectorAll('input[name="font"]:checked')).map(x => x.value).join(', '),
+      colors: [fd.get('primary'), fd.get('secondary'), fd.get('accent')].filter(Boolean).join(', '),
+      hasContent: String(fd.get('content') || '').trim(),
+      additionalInfo: String(fd.get('additional') || '').trim(),
+      timeline: String(fd.get('timeline') || '').trim(),
+      features: Array.from(form.querySelectorAll('input[name="pages"]:checked')).map(x => x.value)
+    };
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error('Submission failed');
+      const success = document.querySelector('.success');
+      if (success) success.classList.add('is-visible');
+      form.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error(error);
+      alert('We could not save your brief. Please try again.');
+      if (button) { button.disabled = false; button.textContent = button.dataset.originalText || 'Submit brief'; }
+    }
+  }, true);
+})();
+</script>'''
+              s = s.replace('</body>', script + '\n</body>')
+              p.write_text(s, encoding='utf-8')
+      - name: Commit patched form
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add create.html
+          git diff --cached --quiet || git commit -m "Connect project brief form to persistent API"
+          git push
