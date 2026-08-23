@@ -1,0 +1,58 @@
+name: Aurix form final wiring
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  wire-form:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire persistent submission and photo uploads
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('create.html')
+          s=p.read_text(encoding='utf-8')
+          marker='aurix-final-form-wiring-v3'
+          if marker in s:
+              raise SystemExit(0)
+          upload='''\n<section class="section" id="aurix-photo-upload"><div class="section-heading"><span class="section-number">07</span><h2>Share your photos</h2></div><p class="helper">Upload reference photos, products, logos, inspiration, or other files for your project. You can select multiple images.</p><div class="upload"><input id="aurixPhotos" name="photos" type="file" accept="image/*" multiple></div><p class="helper" id="aurixPhotoStatus">Images are uploaded securely with your brief.</p></section>\n'''
+          if 'id="aurixPhotos"' not in s:
+              s=s.replace('</form>',upload+'\n</form>')
+          script=r'''<script id="aurix-final-form-wiring-v3">
+(function(){
+ const form=document.getElementById('briefForm'); if(!form)return;
+ const success=()=>{const x=document.querySelector('.success');if(x)x.classList.add('is-visible');form.style.display='none';window.scrollTo({top:0,behavior:'smooth'});};
+ form.addEventListener('submit',async function(e){
+   e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+   const fd=new FormData(form), contact=String(fd.get('contact')||'').trim();
+   const isEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+   const files=[...(document.getElementById('aurixPhotos')?.files||[])];
+   const btn=form.querySelector('.submit-button'); const status=document.getElementById('aurixPhotoStatus');
+   if(btn){btn.disabled=true;btn.textContent='Saving…'}
+   try{
+     const uploaded=[];
+     for(let i=0;i<files.length;i++){
+       if(status)status.textContent='Uploading image '+(i+1)+' of '+files.length+'…';
+       if(files[i].size>10*1024*1024)throw new Error('Each image must be 10 MB or smaller.');
+       const body=new FormData();body.append('file',files[i]);
+       const r=await fetch('/api/upload-photo',{method:'POST',body});
+       const d=await r.json().catch(()=>({})); if(!r.ok)throw new Error(d.error||'Photo upload failed'); uploaded.push(d);
+     }
+     const payload={name:String(fd.get('name')||''),email:isEmail?contact:'',phone:isEmail?'':contact,businessName:String(fd.get('project')||''),businessDescription:String(fd.get('description')||''),goal:String(form.querySelector('input[name="website-type"]:checked')?.value||''),style:[...form.querySelectorAll('input[name="font"]:checked')].map(x=>x.value).join(', '),colors:[fd.get('primary'),fd.get('secondary'),fd.get('accent')].filter(Boolean).join(', '),hasContent:String(fd.get('content')||''),additionalInfo:String(fd.get('additional')||''),timeline:String(fd.get('timeline')||''),features:[...form.querySelectorAll('input[name="pages"]:checked')].map(x=>x.value),photos:uploaded};
+     const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Could not save your brief');success();
+   }catch(err){console.error(err);alert(err.message||'Could not save your brief. Please try again.');if(btn){btn.disabled=false;btn.textContent='Submit brief'}}
+ },true);
+})();
+</script>'''
+          s=s.replace('</body>',script+'\n</body>')
+          p.write_text(s,encoding='utf-8')
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add create.html
+          git diff --cached --quiet || git commit -m "Wire brief form to database and photo storage"
+          git push
