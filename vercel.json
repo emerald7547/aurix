@@ -1,4 +1,7 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "echo 'Static site - no build required'",
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/create", "destination": "/create.html" }
