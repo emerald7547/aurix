@@ -6,21 +6,38 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_FILE = path.join(__dirname, '../submissions.json');
 
 function initDB() {
-    if (!existsSync(DB_FILE)) {
-        writeFileSync(DB_FILE, JSON.stringify([]));
+    try {
+        if (!existsSync(DB_FILE)) {
+            writeFileSync(DB_FILE, JSON.stringify([]));
+        }
+    } catch (error) {
+        console.log('Note: Using in-memory storage on Vercel (no file persistence)');
     }
 }
+
+// In-memory fallback for Vercel
+let inMemoryDB = [];
 
 function readSubmissions() {
     try {
-        return JSON.parse(readFileSync(DB_FILE, 'utf-8'));
-    } catch {
-        return [];
+        if (existsSync(DB_FILE)) {
+            return JSON.parse(readFileSync(DB_FILE, 'utf-8'));
+        }
+    } catch (error) {
+        console.log('Using in-memory storage');
     }
+    return inMemoryDB;
 }
 
 function writeSubmissions(data) {
-    writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    try {
+        if (existsSync(path.dirname(DB_FILE))) {
+            writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+        }
+    } catch (error) {
+        console.log('Storing in memory (Vercel limitation)');
+    }
+    inMemoryDB = data;
 }
 
 export default function handler(req, res) {
@@ -39,17 +56,38 @@ export default function handler(req, res) {
         return;
     }
 
-    const { name, email, phone, businessName, businessDescription, goal, style, colors, hasContent, additionalInfo, timeline, features } = req.body;
+    const {
+        name,
+        email,
+        phone,
+        instagram,
+        businessName,
+        businessDescription,
+        goal,
+        style,
+        colors,
+        hasContent,
+        additionalInfo,
+        timeline,
+        features,
+        imageUrl
+    } = req.body;
 
-    if (!name || !email || !phone || !businessName) {
-        return res.status(400).json({ error: 'Missing required fields' });
+    // Validate required fields
+    if (!name || !email || !businessName) {
+        return res.status(400).json({ error: 'Missing required fields: name, email, businessName' });
+    }
+
+    if (!phone && !instagram) {
+        return res.status(400).json({ error: 'Please provide either phone number or Instagram ID' });
     }
 
     const submission = {
         id: Date.now().toString(),
         name,
         email,
-        phone,
+        phone: phone || 'Not provided',
+        instagram: instagram || 'Not provided',
         businessName,
         businessDescription,
         goal,
@@ -59,6 +97,7 @@ export default function handler(req, res) {
         additionalInfo,
         timeline,
         features: Array.isArray(features) ? features : [],
+        imageUrl: imageUrl || null,
         submittedAt: new Date().toISOString()
     };
 
@@ -67,10 +106,17 @@ export default function handler(req, res) {
         const submissions = readSubmissions();
         submissions.push(submission);
         writeSubmissions(submissions);
+        
         console.log(`✓ New submission from ${name} (${email})`);
-        res.status(200).json({ success: true, id: submission.id });
+        console.log(`  Phone: ${phone || 'N/A'}, Instagram: ${instagram || 'N/A'}`);
+        
+        res.status(200).json({ 
+            success: true, 
+            id: submission.id,
+            message: 'Brief submitted successfully!'
+        });
     } catch (error) {
         console.error('Error saving submission:', error);
-        res.status(500).json({ error: 'Failed to save submission' });
+        res.status(500).json({ error: 'Failed to save submission. Please try again.' });
     }
 }
