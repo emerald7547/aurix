@@ -1,27 +1,44 @@
 {
   "version": 2,
+  "public": true,
   "builds": [
     {
-      "src": "api/submit.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     },
     {
-      "src": "api/get.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/delete.js",
-      "use": "@vercel/node"
+      "src": "*.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+      "src": "/api/submit",
+      "dest": "/api/submit.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/api/get-submissions",
+      "dest": "/api/get.js"
+    },
+    {
+      "src": "/api/delete-submission/(.*)",
+      "dest": "/api/delete.js?id=$1"
+    },
+    {
+      "src": "/(.*\\.html)",
       "dest": "/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/create",
+      "dest": "/create.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     }
   ]
 }
