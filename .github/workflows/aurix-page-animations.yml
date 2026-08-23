@@ -1,9 +1,7 @@
 name: Add AURIX page intro animations
 
 on:
-  push:
-    paths-ignore:
-      - '.github/workflows/aurix-page-animations.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,20 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add index intro animation without changing existing design
+      - name: Add index intro animation
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          css = '''\n        .aurix-intro { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: #080a12; pointer-events: none; animation: aurixIntroOut .7s 2.9s forwards; }\n        .aurix-letter { position: relative; color: #fff; font: 400 clamp(7rem, 24vw, 16rem)/.8 Georgia, serif; letter-spacing: .08em; opacity: 0; transform: scale(.3); animation: aurixLetterIn .9s .25s cubic-bezier(.16,1,.3,1) forwards; }\n        .aurix-letter::after { content: ''; position: absolute; left: 8%; right: 8%; bottom: -1rem; height: 5px; border-radius: 99px; background: linear-gradient(90deg,#7445ff,#5d91ff,#d38aff); transform: scaleX(0); transform-origin: left; animation: aurixLine .8s 1.15s ease-out forwards; }\n        .aurix-welcome { position: absolute; top: calc(50% + clamp(5rem, 12vw, 9rem)); color: #d38aff; font: 700 .75rem/1 Arial,sans-serif; letter-spacing: .35em; text-transform: uppercase; opacity: 0; transform: translateY(15px); animation: aurixWelcome .7s 1.55s ease-out forwards; }\n        @keyframes aurixLetterIn { from { opacity:0; transform:scale(.3) rotate(-8deg); filter:blur(12px); } to { opacity:1; transform:scale(1) rotate(0); filter:blur(0); } }\n        @keyframes aurixLine { to { transform:scaleX(1); } }\n        @keyframes aurixWelcome { to { opacity:1; transform:translateY(0); } }\n        @keyframes aurixIntroOut { to { opacity:0; visibility:hidden; } }\n        @media (prefers-reduced-motion: reduce) { .aurix-intro { animation-duration:.01ms !important; animation-delay:.01ms !important; } .aurix-letter,.aurix-letter::after,.aurix-welcome { animation-duration:.01ms !important; animation-delay:.01ms !important; } }\n'''
-          if '.aurix-intro {' not in s:
-              s = s.replace('</style>', css + '    </style>', 1)
-              s = s.replace('<body>', '<body>\n    <div class="aurix-intro" aria-hidden="true"><div class="aurix-letter">A</div><div class="aurix-welcome">Welcome to AURIX</div></div>', 1)
-              p.write_text(s, encoding='utf-8')
+          css = '''
+          .aurix-intro{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#080a12;pointer-events:none;animation:aurixIntroOut .7s 2.9s forwards}
+          .aurix-letter{color:#fff;font:400 clamp(7rem,24vw,16rem)/.8 Georgia,serif;letter-spacing:.08em;opacity:0;transform:scale(.3);animation:aurixLetterIn .9s .25s cubic-bezier(.16,1,.3,1) forwards}
+          .aurix-welcome{position:absolute;top:calc(50% + clamp(5rem,12vw,9rem));color:#d38aff;font:700 .75rem/1 Arial,sans-serif;letter-spacing:.35em;text-transform:uppercase;opacity:0;animation:aurixWelcome .7s 1.55s ease-out forwards}
+          @keyframes aurixLetterIn{from{opacity:0;transform:scale(.3) rotate(-8deg);filter:blur(12px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+          @keyframes aurixWelcome{to{opacity:1;transform:translateY(0)}}
+          @keyframes aurixIntroOut{to{opacity:0;visibility:hidden}}
+          @media(prefers-reduced-motion:reduce){.aurix-intro{animation-duration:.01ms!important;animation-delay:.01ms!important}.aurix-letter,.aurix-welcome{animation-duration:.01ms!important;animation-delay:.01ms!important}}
+          '''
+          if '.aurix-intro{' not in s:
+              s=s.replace('</style>',css+'\n</style>',1)
+              s=s.replace('<body>','<body>\n<div class="aurix-intro" aria-hidden="true"><div class="aurix-letter">A</div><div class="aurix-welcome">Welcome to AURIX</div></div>',1)
+              p.write_text(s,encoding='utf-8')
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'Add AURIX landing intro animation' && git push
+          git diff --cached --quiet || git commit -m 'Add AURIX index intro animation'
+          git push
