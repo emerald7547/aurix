@@ -1,14 +1,9 @@
 {
   "version": 2,
-  "public": true,
   "builds": [
     {
       "src": "api/**/*.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -25,20 +20,24 @@
       "dest": "/api/delete.js?id=$1"
     },
     {
-      "src": "/(.*\\.html)",
+      "src": "/(.*\\.html)$",
       "dest": "/$1"
     },
     {
-      "src": "/admin",
+      "src": "/admin/?$",
       "dest": "/admin.html"
     },
     {
-      "src": "/create",
+      "src": "/create/?$",
       "dest": "/create.html"
     },
     {
-      "src": "/",
+      "src": "/?$",
       "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
