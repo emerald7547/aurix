@@ -1,19 +1,3 @@
 import { randomUUID } from 'node:crypto';
-import { ensureTable, getDb } from '../lib/db.js';
-export default async function handler(req,res){
-  res.setHeader('Content-Type','application/json');
-  if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
-  try{
-    const {name,email,phone,instagram,businessName,businessDescription,goal,style,colors,hasContent,additionalInfo,timeline,features,images}=req.body||{};
-    if(!name||!email||!businessName)return res.status(400).json({error:'Missing required fields: name, email, businessName'});
-    const safeImages=Array.isArray(images)?images.slice(0,10):[];
-    if(safeImages.some(x=>typeof x!=='object'||!x.data||!String(x.data).startsWith('data:image/')))return res.status(400).json({error:'Invalid image upload'});
-    await ensureTable(); const db=getDb();
-    const count=await db`SELECT COUNT(*)::int AS count FROM aurix_submissions`;
-    if(Number(count[0].count)>=5)return res.status(403).json({error:'Submissions are currently closed. We have reached the limit of 5 active submissions.'});
-    const id=randomUUID(); const safeFeatures=Array.isArray(features)?features:[];
-    await db`INSERT INTO aurix_submissions (id,name,email,phone,instagram,business_name,business_description,goal,style,colors,has_content,additional_info,timeline,features,images)
-      VALUES (${id},${name},${email},${phone||null},${instagram||null},${businessName},${businessDescription||''},${goal||''},${style||''},${colors||''},${hasContent||''},${additionalInfo||''},${timeline||''},${JSON.stringify(safeFeatures)}::jsonb,${JSON.stringify(safeImages)}::jsonb)`;
-    return res.status(200).json({success:true,id,message:'Brief submitted successfully!'});
-  }catch(error){console.error('Error saving submission:',error);return res.status(500).json({error:'Failed to save submission. Please try again.'});}
-}
+import { ensureTable,getDb,getUserFromRequest } from '../lib/db.js';
+export default async function handler(req,res){res.setHeader('Content-Type','application/json');if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});try{const user=await getUserFromRequest(req);if(!user)return res.status(401).json({error:'Please create an account or log in before submitting.'});const {name,email,phone,instagram,businessName,businessDescription,goal,style,colors,hasContent,additionalInfo,timeline,features,images}=req.body||{};if(!name||!email||!businessName)return res.status(400).json({error:'Missing required fields: name, email, businessName'});const safeImages=Array.isArray(images)?images.slice(0,10):[];if(safeImages.some(x=>typeof x!=='object'||!x.data||!String(x.data).startsWith('data:image/')))return res.status(400).json({error:'Invalid image upload'});await ensureTable();const db=getDb();const count=await db`SELECT COUNT(*)::int AS count FROM aurix_submissions`;if(Number(count[0].count)>=5)return res.status(403).json({error:'Submissions are currently closed. We have reached the limit of 5 active submissions.'});const id=randomUUID();const safeFeatures=Array.isArray(features)?features:[];await db`INSERT INTO aurix_submissions(id,name,email,phone,instagram,business_name,business_description,goal,style,colors,has_content,additional_info,timeline,features,images,user_id) VALUES(${id},${name},${email},${phone||null},${instagram||null},${businessName},${businessDescription||''},${goal||''},${style||''},${colors||''},${hasContent||''},${additionalInfo||''},${timeline||''},${JSON.stringify(safeFeatures)}::jsonb,${JSON.stringify(safeImages)}::jsonb,${user.id})`;return res.status(200).json({success:true,id,message:'Brief submitted successfully!'})}catch(error){console.error(error);return res.status(500).json({error:'Failed to save submission. Please try again.'})}}
