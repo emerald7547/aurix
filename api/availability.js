@@ -1,0 +1,2 @@
+import { ensureTable, getDb } from '../lib/db.js';
+export default async function handler(req,res){if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});try{await ensureTable();const db=getDb();const r=await db`SELECT COUNT(*)::int AS count FROM aurix_submissions`;const count=Number(r[0].count);return res.status(200).json({open:count<5,count,remaining:Math.max(0,5-count)});}catch(e){console.error(e);return res.status(500).json({open:true,count:0,remaining:5});}}
