@@ -1,9 +1,30 @@
 import { ensureTable, getDb } from '../lib/db.js';
 export default async function handler(req,res){
+  res.setHeader('Content-Type','application/json');
+  res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
-  try{await ensureTable();const {id,action}=req.body||{};if(!id||!['approve','complete','delete','building','deploying'].includes(action))return res.status(400).json({error:'Invalid action'});const db=getDb();
-    if(action==='delete') await db`DELETE FROM aurix_submissions WHERE id=${id}`;
-    else if(action==='approve') await db`UPDATE aurix_submissions SET status='approved',status_message='Approved — work can begin.',approved_at=NOW() WHERE id=${id}`;
+  try{
+    await ensureTable();
+    const {id,action}=req.body||{};
+    if(!id||!['approve','complete','delete','building','deploying'].includes(action)) return res.status(400).json({error:'Invalid action'});
+    const db=getDb();
+    if(action==='delete'){
+      // Remove the submission itself first. If this was the user's only submission,
+      // also remove their account and sessions so the deleted project is fully gone.
+      const found=await db`SELECT user_id FROM aurix_submissions WHERE id=${id}`;
+      if(!found.length) return res.status(404).json({error:'Submission not found'});
+      const userId=found[0].user_id;
+      const removed=await db`DELETE FROM aurix_submissions WHERE id=${id} RETURNING id`;
+      if(userId){
+        const remaining=await db`SELECT COUNT(*)::int AS count FROM aurix_submissions WHERE user_id=${userId}`;
+        if(Number(remaining[0].count)===0){
+          await db`DELETE FROM aurix_sessions WHERE user_id=${userId}`;
+          await db`DELETE FROM aurix_users WHERE id=${userId}`;
+        }
+      }
+      return res.status(200).json({success:true,deleted:removed.length===1});
+    }
+    if(action==='approve') await db`UPDATE aurix_submissions SET status='approved',status_message='Approved — work can begin.',approved_at=NOW() WHERE id=${id}`;
     else if(action==='complete') await db`UPDATE aurix_submissions SET status='complete',status_message='Website completed and ready.',completed_at=NOW() WHERE id=${id}`;
     else if(action==='building') await db`UPDATE aurix_submissions SET status='building',status_message='Your website is being built.' WHERE id=${id}`;
     else if(action==='deploying') await db`UPDATE aurix_submissions SET status='deploying',status_message='Your website is being deployed.' WHERE id=${id}`;
